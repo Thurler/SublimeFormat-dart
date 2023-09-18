@@ -20,9 +20,7 @@ class FormatDartCommand(sublime_plugin.TextCommand):
     with open(self.tmp_filepath, 'w') as f:
       f.write(self.view.substr(region))
     output, error = self.execShell("dartformat " + self.tmp_filepath)
-    if error:
-      sublime.error_message(error.decode('utf-8'))
-    else:
+    if not error:
       self.view.replace(edit, region, output.decode('utf-8'))
 
 class AutoRunDartFormatOnSave(sublime_plugin.EventListener):
