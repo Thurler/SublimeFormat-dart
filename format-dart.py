@@ -19,9 +19,14 @@ class FormatDartCommand(sublime_plugin.TextCommand):
     region = sublime.Region(0, self.view.size())
     with open(self.tmp_filepath, 'w') as f:
       f.write(self.view.substr(region))
-    output, error = self.execShell("dartformat " + self.tmp_filepath)
+    output, error = self.execShell("dartformat -o show " + self.tmp_filepath)
+    lines = output.decode('utf-8').split('\n')
+    if lines[0][:9] == "Resolving":
+      lines = lines[3:]
+    if lines[-2][:9] == "Formatted":
+      lines = lines[:-2] + ['']
     if not error:
-      self.view.replace(edit, region, output.decode('utf-8'))
+      self.view.replace(edit, region, '\n'.join(lines))
 
 class AutoRunDartFormatOnSave(sublime_plugin.EventListener):
   def on_pre_save(self, view):
